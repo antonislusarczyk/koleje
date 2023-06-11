@@ -1,62 +1,59 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
-
-int t[1048576];
-int m;
-int cp(int a, int b) {
-    if(a==b) return t[a+m];
-    a+=m;
-    b+=m;
-    b/=2;
-    a/=2;
-    int em=0;
-    while(a<b) {
-        em=max(em,t[a*2+1]);
-        em=max(em,t[b*2]);
-        b/=2;
-        a/=2;
-    }
-
-    return max(em, t[a]);
+int dr[2097159];
+int um;
+int flc(int x) {
+    int a=1;
+    while(a<x) a*=2;
+    if(a==x)return a*2;
+    return a;
 }
-void updat(int a,int b,int z) {
-    a+=m;
-    b+=m;
-    for(int d=a;d<=b;d++) {
-        t[d]+=z;
-        int es=d/2;
-        while(true) {
-            if(t[es]>=t[d]) break;
-            else {
-                t[es]=t[d];
-                es/=2;
-            }
+int lc;
+bool cm(int pe,int k, int le) {
+    k--;
+    pe+=lc; k+=lc;
+    int m=max(dr[pe],dr[k]);
+    int l=pe,p=k;
+    while(l/2<p/2) {
+        if((l/2)*2==l) m=max(m, dr[l+1]);
+        if((p/2)*2==p+1) m=max(m, dr[p-1]);
+        l/=2;
+        p/=2;
+    }
+    if(le<=um-m) return 1;
+    return 0;
+}
+void akt(int p, int k, int l) {
+    k--;
+    p+=lc; k+=lc;
+    for(int d=p;d<=k;d++) {
+        dr[d]+=l;
+        int w=dr[d];
+        int e=d;
+        while(dr[e/2]<w) {
+            dr[e/2]=w;
+            e/=2;
         }
     }
 }
 int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    int lm,ls,lz;
-    cin>>lm>>ls>>lz;
-    m=1<<19;
-    for(int d=0;d<lz;d++) {
-        int a,b,z;
-        cin>>a>>b>>z;
-        //cout << "cp ab: " <<a <<"-a b-"<<b<<" "<< cp(a,b) << endl;
-        if(ls-cp(a,b-1)>=z) {
+    int n,m,z;
+    cin>>n>>m>>z;
+    um=m;
+    lc=flc(n);
+    for(int d=0;d<z;d++) {
+        int p,k,l;
+        cin>>p>>k>>l;
+        if(cm(p,k,l)) {
             cout << "T" << endl;
-            updat(a,b-1,z);
+            akt(p,k,l);
         }
         else cout << "N" << endl;
-        /*for(int d=1+m;d<=lm+m;d++) {
-            cout << t[d] << " ";
+        /*
+        for(int e=lc;e<=lc+n;e++) {
+            cout << dr[e] << " ";
         }
         cout << endl;
          */
     }
-
 }
-
-
